@@ -33,8 +33,7 @@ class API:
     def cancel_entrust(self, entrust_no):
 
         self.__select_menu(['撤单[F3]'])
-        cancelable_entrusts = self._get_grid_data(is_entrust=True)  # 获取可以撤单的条目
-
+        cancelable_entrusts = self.__get_grid_data()  # 获取可以撤单的条目
         for i, entrust in enumerate(cancelable_entrusts):
             if str(entrust["合同编号"]) == str(entrust_no):  # 对指定合同进行撤单
                 return self.__cancel_by_double_click(i)
@@ -44,12 +43,18 @@ class API:
     def get_balance(self):
 
         self.__select_menu(['查询[F4]', '资金股票'])
-
         result = {}
         for key, control_id in BALANCE_CONTROL_ID_GROUP.items():
-            result[key] = float(
-                self.main_wnd.window(control_id=control_id, class_name='Static').window_text()
-            )
+            retry=0
+            while retry<10:
+                try:
+                   result[key] = float(self.main_wnd.window(control_id=control_id, class_name='Static').window_text())
+                   retry=10
+                except:
+                    time.sleep(0.1)
+                    retry+=1
+                    print(retry)
+
         return result
 
     """ 判断订单是否完成 """
@@ -57,7 +62,7 @@ class API:
 
         self.__select_menu(['卖出[F2]'])
         self.__select_menu(['撤单[F3]'])
-        cancelable_entrusts = self.__get_grid_data(is_entrust=True)
+        cancelable_entrusts = self.__get_grid_data()
         for i, entrust in enumerate(cancelable_entrusts):
             if str(entrust["合同编号"]) == str(entrust_no):  # 如果订单未完成，就意味着可以撤单
                 if entrust["成交数量"] == 0:
@@ -68,20 +73,20 @@ class API:
     def get_position(self):
 
         self.__select_menu(['查询[F4]', '资金股票'])
-        return self.__get_grid_data(index=3)
+        return self.__get_grid_data()
 
     """ 获取当日委托 """
     def get_today_entrusts(self):
 
         time.sleep(1)
         self.__select_menu(['查询[F4]', '当日委托'])
-        return self.__get_grid_data(index=3)
+        return self.__get_grid_data()
 
     """获取当日成交"""
     def get_today_trades(self):
 
         self.__select_menu(['查询[F4]', '当日成交'])
-        return self.__get_grid_data(index=3)
+        return self.__get_grid_data()
 
     """获取历史成交"""
     def get_history_trades(self,startD,endD):
@@ -93,7 +98,7 @@ class API:
         self.main_wnd.window(control_id=0x3f1, class_name="SysDateTimePick32").set_time(year=st.year, month=st.month, day=st.day)
         self.main_wnd.window(control_id=0x3f2, class_name="SysDateTimePick32").set_time(year=ed.year, month=ed.month, day=ed.day)
         self.main_wnd.window(control_id=0x3EE, class_name="Button").click()
-        return self.__get_grid_data(index=3)
+        return self.__get_grid_data()
 
     """获取历史委托"""
     def get_history_entrusts(self,startD,endD):
@@ -104,7 +109,7 @@ class API:
         self.main_wnd.window(control_id=0x3f1, class_name="SysDateTimePick32").set_time(year=st.year, month=st.month, day=st.day)
         self.main_wnd.window(control_id=0x3f2, class_name="SysDateTimePick32").set_time(year=ed.year, month=ed.month, day=ed.day)
         self.main_wnd.window(control_id=0x3EE, class_name="Button").click()
-        return self.__get_grid_data(index=3)
+        return self.__get_grid_data()
 
     """ 点击左边菜单 """
     def __select_menu(self, path):
@@ -145,7 +150,16 @@ class API:
         return self.__parse_result(result)
 
     """获取grid里面的数据"""
-    def __get_grid_data(self, index=3):
+    '''使用快捷键'''
+    def __get_grid_data(self,index=3):
+        grid = self.main_wnd.window(control_id=0x417, class_name='CVirtualGridCtrl')
+        grid.type_keys('^C')
+        data = clipboard.GetData()
+        df = pd.read_csv(io.StringIO(data), delimiter='\t', na_filter=False)
+        return df.to_dict('records')
+
+    '''使用右键'''
+    def __get_grid_data2(self, index=3):
 
         grid = self.main_wnd.window(control_id=0x417, class_name='CVirtualGridCtrl')
         #time.sleep(0.1)
@@ -158,7 +172,21 @@ class API:
         return df.to_dict('records')
 
 
-
+    """ 通过双击撤单 """
+    def __cancel_by_double_click(self, row):
+        x = 50
+        y = 30 + 16 * row
+        self.app.top_window().window(control_id=0x417, class_name='CVirtualGridCtrl').double_click(coords=(x, y))
+        self.app.top_window().window(control_id=0x6, class_name='Button').click()  # 确定撤单
+        time.sleep(0.1)
+        if "网上股票交易系统5.0" not in self.app.top_window().window_text():
+            result = self.app.top_window().window(control_id=0x3EC, class_name='Static').window_text()
+            self.app.top_window().window(control_id=0x2, class_name='Button').click()  # 确定撤单
+            return self.__parse_result(result)
+        else:
+            return {
+                "success": True
+            }
 
     @staticmethod
     def __parse_result(result):
