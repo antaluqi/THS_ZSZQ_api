@@ -2,7 +2,7 @@ import pywinauto
 from pywinauto import clipboard
 from pywinauto import keyboard
 from const import BALANCE_CONTROL_ID_GROUP
-import time,datetime
+import time,datetime,re
 import pandas as pd
 import io
 
@@ -23,11 +23,35 @@ class API:
         self.__select_menu(['买入[F1]'])
         return self.__trade(stock_no, price, amount)
 
+    def buy2(self,stock_no, price, amount):
+        self.__select_menu(['买入[F1]'])
+        step=0
+        retrtNo=0
+        while step!=-1 and retrtNo<10:
+            r=self.__trade2(stock_no, price, amount,step)
+            if r['step']==-1:
+                return r
+            step=r['step']
+            time.sleep(0.5)
+            print("retry第%d次，从第%d步开始，%s"%(retrtNo,step,r['msg']))
+
     """卖出"""
     def sell(self, stock_no, price, amount):
 
         self.__select_menu(['卖出[F2]'])
         return self.__trade(stock_no, price, amount)
+
+    def sell2(self, stock_no, price, amount):
+        self.__select_menu(['卖出[F2]'])
+        step=0
+        retrtNo=0
+        while step!=-1 and retrtNo<10:
+            r=self.__trade2(stock_no, price, amount,step)
+            if r['step']==-1:
+                return r
+            step=r['step']
+            time.sleep(0.5)
+            print("retry第%d次，从第%d步开始，%s"%(retrtNo,step,r['msg']))
 
     """ 撤单 """
     def cancel_entrust(self, entrust_no):
@@ -149,10 +173,56 @@ class API:
             pass
         return self.__parse_result(result)
 
+
+    def __trade2(self,stock_no, price, amount,step=0):
+        if step==0:
+            self.main_wnd.window(control_id=0x408, class_name="Edit").set_text(str(stock_no))  # 设置股票代码
+            time.sleep(0.1)
+            self.main_wnd.window(control_id=0x409, class_name="Edit").set_text(str(price))  # 设置价格
+            self.main_wnd.window(control_id=0x40A, class_name="Edit").set_text(str(amount))  # 设置股数目
+            self.main_wnd.window(control_id=0x3EE, class_name="Button").click()  # 点击卖出or买入
+            time.sleep(0.1)
+            step=1
+        if step==1:
+            self.app.top_window().set_focus()
+            if self.app.top_window().window_text()=='网上股票交易系统5.0':
+               return {"success": False,"msg":"确认窗口未弹出","step":1}
+            popW_title=self.app.top_window().window(control_id=0x555, class_name='Static').window_text()
+            if popW_title == '提示信息':
+                msg = self.app.top_window().window(control_id=0x410, class_name='Static').window_text()  # 提示信息
+                self.app.top_window().window(control_id=0x7, class_name='Button').click()  # 提示取消
+                return {"success": False, "msg": msg, "step": -1}
+            elif popW_title=='提示':
+                msg=self.app.top_window().window(control_id=0x3EC, class_name='Static').window_text() # 提示信息
+                self.app.top_window().window(control_id=0x2, class_name='Button').click()  # 提示确定
+                return {"success": False, "msg": msg, "step": -1}
+            elif popW_title=='委托确认':
+                msg=self.app.top_window().window(control_id=0x410, class_name='Static').window_text()
+                s_code=re.findall('代码：(.*?)\n', msg, re.M | re.I | re.S)[0]
+                s_price=float(re.findall('价格：(.*?)\n', msg, re.M | re.I | re.S)[0])
+                s_amount = int(re.findall('数量：(.*?)\n', msg, re.M | re.I | re.S)[0])
+                if s_code!=stock_no and s_price!=float(price) and s_amount!=int(amount):
+                    self.app.top_window().window(control_id=0x7, class_name='Button').click()  # 委托取消
+                    return {"success": False, "msg": msg, "step":0}
+                self.app.top_window().window(control_id=0x6, class_name='Button').click()  # 委托确定
+                step=2
+            return {"success": False,"msg":"窗口未弹出","step":1}
+        if step==2:
+            self.app.top_window().set_focus()
+            popW_title = self.app.top_window().window(control_id=0x555, class_name='Static').window_text()
+            if popW_title!="提示":
+                return {"success": False, "msg": "委托结果窗口未弹出", "step": 2}
+            msg = self.app.top_window().window(control_id=0x3EC, class_name='Static').window_text()
+            self.app.top_window().window(control_id=0x2, class_name='Button').click()  # 提示确定
+            if msg.find('成功')!=-1:
+                return ({"success": True, "msg": msg, "step":-1})
+            return ({"success": False, "msg": msg, "step": -1})
+
     """获取grid里面的数据"""
     '''使用快捷键'''
     def __get_grid_data(self,index=3):
         grid = self.main_wnd.window(control_id=0x417, class_name='CVirtualGridCtrl')
+        clipboard.EmptyClipboard()
         grid.type_keys('^C')
         data = clipboard.GetData()
         df = pd.read_csv(io.StringIO(data), delimiter='\t', na_filter=False)
@@ -208,3 +278,4 @@ class API:
                 "success": False,
                 "msg": result
             }
+
