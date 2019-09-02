@@ -3,7 +3,7 @@ import pprint,datetime,random
 from retrying import retry
 
 api=ZSZQ.API()
-r=api.get_history_entrusts('2018-01-01','2018-01-05')
+#r=api.buy2('601398',5.3,100)
 pprint.pprint(r)
 
 '''  retrying '''

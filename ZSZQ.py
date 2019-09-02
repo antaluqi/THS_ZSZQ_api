@@ -17,6 +17,7 @@ class API:
         self.app = pywinauto.Application().connect(path=exe_path, timeout=10)
         print("连接成功!!!")
         self.main_wnd = self.app.top_window()
+        main_wnd.restore()
 
     """买入"""
     def buy(self, stock_no, price, amount):
@@ -24,6 +25,7 @@ class API:
         return self.__trade(stock_no, price, amount)
 
     def buy2(self,stock_no, price, amount):
+        self.main_wnd.restore()
         self.__select_menu(['买入[F1]'])
         step=0
         retrtNo=0
@@ -42,6 +44,7 @@ class API:
         return self.__trade(stock_no, price, amount)
 
     def sell2(self, stock_no, price, amount):
+        self.main_wnd.restore()
         self.__select_menu(['卖出[F2]'])
         step=0
         retrtNo=0
@@ -77,7 +80,7 @@ class API:
                 except:
                     time.sleep(0.1)
                     retry+=1
-                    print(retry)
+                    print("重试第%d次"%(retry))
 
         return result
 
@@ -206,7 +209,8 @@ class API:
                     return {"success": False, "msg": msg, "step":0}
                 self.app.top_window().window(control_id=0x6, class_name='Button').click()  # 委托确定
                 step=2
-            return {"success": False,"msg":"窗口未弹出","step":1}
+            else:
+                 return {"success": False,"msg":"窗口未弹出","step":1}
         if step==2:
             self.app.top_window().set_focus()
             popW_title = self.app.top_window().window(control_id=0x555, class_name='Static').window_text()

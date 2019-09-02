@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4aba5fb9-7300-4750-ace1-868c49cb5bd8" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ZSZQ.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZSZQ.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
@@ -13,32 +14,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ZSZQ.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="511">
-              <caret line="229" lean-forward="true" selection-start-line="229" selection-end-line="229" />
+            <state relative-caret-position="249">
+              <caret line="145" column="51" lean-forward="true" selection-start-line="145" selection-start-column="51" selection-end-line="145" selection-end-column="51" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
-                <element signature="e#305#491#0" />
-                <element signature="e#558#641#0" />
-                <element signature="e#698#987#0" />
-                <element signature="e#710#793#0" />
-                <element signature="e#1240#1576#0" />
-                <element signature="e#861#1192#0" />
-                <element signature="e#1249#1733#0" />
-                <element signature="e#1813#2163#0" />
-                <element signature="e#2219#2295#0" />
-                <element signature="e#2359#2457#0" />
-                <element signature="e#2517#2593#0" />
-                <element signature="e#2667#3195#0" />
-                <element signature="e#3866#4080#0" />
-                <element signature="e#4148#4467#0" />
-                <element signature="e#4538#5437#0" />
-                <element signature="e#5505#7666#0" />
-                <element signature="e#5845#6251#0" />
-                <element signature="e#6326#6980#0" />
-                <element signature="e#5847#6332#0" />
+                <element signature="e#308#521#0" />
+                <element signature="e#734#1070#0" />
+                <element signature="e#1103#1186#0" />
+                <element signature="e#1305#1641#0" />
+                <element signature="e#1646#1977#0" />
+                <element signature="e#2034#2518#0" />
+                <element signature="e#2598#2948#0" />
+                <element signature="e#3004#3080#0" />
+                <element signature="e#3144#3242#0" />
+                <element signature="e#3302#3378#0" />
+                <element signature="e#3452#3980#0" />
+                <element signature="e#4056#4586#0" />
+                <element signature="e#4933#5252#0" />
+                <element signature="e#5323#6222#0" />
+                <element signature="e#6288#9176#0" />
+                <element signature="e#9601#10007#0" />
+                <element signature="e#10082#10736#0" />
+                <element signature="e#10796#11281#0" />
               </folding>
             </state>
           </provider>
@@ -48,16 +48,16 @@
         <entry file="file://$PROJECT_DIR$/const.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="114">
-              <caret line="6" column="17" lean-forward="true" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
+              <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
-              <caret line="5" column="51" selection-start-line="5" selection-start-column="51" selection-end-line="5" selection-end-column="51" />
+            <state relative-caret-position="114">
+              <caret line="6" column="1" lean-forward="true" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -85,14 +85,13 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/API.py" />
-        <option value="$PROJECT_DIR$/ZSZQ.py" />
         <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/ZSZQ.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-12" />
-    <option name="y" value="1" />
+    <option name="x" value="-19" />
     <option name="width" value="1300" />
     <option name="height" value="1018" />
   </component>
@@ -101,7 +100,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -113,6 +111,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -183,14 +182,14 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-12" y="1" width="1300" height="1018" extended-state="0" />
+    <frame x="-19" y="0" width="1300" height="1018" extended-state="0" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23613313" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.3280543" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.27488688" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39932126" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -198,56 +197,66 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.32918552" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.44683257" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.44683257" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/ZSZQ.py</url>
+          <line>214</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/API.py" />
     <entry file="file://$PROJECT_DIR$/const.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="114">
-          <caret line="6" column="17" lean-forward="true" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ZSZQ.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="511">
-          <caret line="229" lean-forward="true" selection-start-line="229" selection-end-line="229" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-            <element signature="e#305#491#0" />
-            <element signature="e#558#641#0" />
-            <element signature="e#698#987#0" />
-            <element signature="e#710#793#0" />
-            <element signature="e#1240#1576#0" />
-            <element signature="e#861#1192#0" />
-            <element signature="e#1249#1733#0" />
-            <element signature="e#1813#2163#0" />
-            <element signature="e#2219#2295#0" />
-            <element signature="e#2359#2457#0" />
-            <element signature="e#2517#2593#0" />
-            <element signature="e#2667#3195#0" />
-            <element signature="e#3866#4080#0" />
-            <element signature="e#4148#4467#0" />
-            <element signature="e#4538#5437#0" />
-            <element signature="e#5505#7666#0" />
-            <element signature="e#5845#6251#0" />
-            <element signature="e#6326#6980#0" />
-            <element signature="e#5847#6332#0" />
-          </folding>
+          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="51" selection-start-line="5" selection-start-column="51" selection-end-line="5" selection-end-column="51" />
+        <state relative-caret-position="114">
+          <caret line="6" column="1" lean-forward="true" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ZSZQ.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="249">
+          <caret line="145" column="51" lean-forward="true" selection-start-line="145" selection-start-column="51" selection-end-line="145" selection-end-column="51" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+            <element signature="e#308#521#0" />
+            <element signature="e#734#1070#0" />
+            <element signature="e#1103#1186#0" />
+            <element signature="e#1305#1641#0" />
+            <element signature="e#1646#1977#0" />
+            <element signature="e#2034#2518#0" />
+            <element signature="e#2598#2948#0" />
+            <element signature="e#3004#3080#0" />
+            <element signature="e#3144#3242#0" />
+            <element signature="e#3302#3378#0" />
+            <element signature="e#3452#3980#0" />
+            <element signature="e#4056#4586#0" />
+            <element signature="e#4933#5252#0" />
+            <element signature="e#5323#6222#0" />
+            <element signature="e#6288#9176#0" />
+            <element signature="e#9601#10007#0" />
+            <element signature="e#10082#10736#0" />
+            <element signature="e#10796#11281#0" />
           </folding>
         </state>
       </provider>
