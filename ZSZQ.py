@@ -17,44 +17,17 @@ class API:
         self.app = pywinauto.Application().connect(path=exe_path, timeout=10)
         print("连接成功!!!")
         self.main_wnd = self.app.top_window()
-        main_wnd.restore()
+        self.main_wnd.restore()
 
     """买入"""
     def buy(self, stock_no, price, amount):
         self.__select_menu(['买入[F1]'])
         return self.__trade(stock_no, price, amount)
 
-    def buy2(self,stock_no, price, amount):
-        self.main_wnd.restore()
-        self.__select_menu(['买入[F1]'])
-        step=0
-        retrtNo=0
-        while step!=-1 and retrtNo<10:
-            r=self.__trade2(stock_no, price, amount,step)
-            if r['step']==-1:
-                return r
-            step=r['step']
-            time.sleep(0.5)
-            print("retry第%d次，从第%d步开始，%s"%(retrtNo,step,r['msg']))
-
     """卖出"""
     def sell(self, stock_no, price, amount):
-
         self.__select_menu(['卖出[F2]'])
         return self.__trade(stock_no, price, amount)
-
-    def sell2(self, stock_no, price, amount):
-        self.main_wnd.restore()
-        self.__select_menu(['卖出[F2]'])
-        step=0
-        retrtNo=0
-        while step!=-1 and retrtNo<10:
-            r=self.__trade2(stock_no, price, amount,step)
-            if r['step']==-1:
-                return r
-            step=r['step']
-            time.sleep(0.5)
-            print("retry第%d次，从第%d步开始，%s"%(retrtNo,step,r['msg']))
 
     """ 撤单 """
     def cancel_entrust(self, entrust_no):
@@ -158,76 +131,50 @@ class API:
                 pass
 
     """交易"""
-    def __trade(self, stock_no, price, amount):
-        #time.sleep(0.2)
-        self.main_wnd.window(control_id=0x408, class_name="Edit").set_text(str(stock_no))  # 设置股票代码
-        time.sleep(0.1)
-        self.main_wnd.window(control_id=0x409, class_name="Edit").set_text(str(price))  # 设置价格
-        self.main_wnd.window(control_id=0x40A, class_name="Edit").set_text(str(amount))  # 设置股数目
-        self.main_wnd.window(control_id=0x3EE, class_name="Button").click()   # 点击卖出or买入
-        time.sleep(0.1)
-        self.app.top_window().window(control_id=0x6, class_name='Button').click()  # 确定买入
-        self.app.top_window().set_focus()
-        result = self.app.top_window().window(control_id=0x3EC, class_name='Static').window_text()
-        self.app.top_window().set_focus()
-        try:
-            self.app.top_window().window(control_id=0x2, class_name='Button').click()  # 确定
-        except:
-            pass
-        return self.__parse_result(result)
+    def __trade(self,stock_no, price, amount):
+        retryNo=0
+        while retryNo<10:
+            code_Edit=self.main_wnd.window(control_id=0x408, class_name="Edit")
+            priceEdit=self.main_wnd.window(control_id=0x409, class_name="Edit")
+            amountEdit=self.main_wnd.window(control_id=0x40A, class_name="Edit")
+            okButton=self.main_wnd.window(control_id=0x3EE, class_name="Button")
+            code_Edit.set_edit_text(str(stock_no)) # 设置股票代码
+            #time.sleep(0.1) # 需要在系统里面设置【交易设置】的【默认买入价格】和【默认卖出价格】为空
+            priceEdit.set_edit_text(str(price))    # 设置价格
+            amountEdit.set_edit_text(str(amount))  # 设置股数目
+            okButton.type_keys('{ENTER}')     # 点击卖出or买入
+            pop_wnd=popupWin(self.main_wnd)
+            if not pop_wnd.flash():
+                return {"success": False, "msg": '获取弹出窗口失败'}
+            if pop_wnd.title=='委托确认':
+                if pop_wnd.msg['code']!=stock_no or pop_wnd.msg['price']!=price or pop_wnd.msg['amount']!=amount:
+                    continue
 
+                pop_wnd.okButton.type_keys('{ENTER}')
+                break
+            elif pop_wnd.title =='提示':
+                pop_wnd.okButton.type_keys('{ENTER}')
+                return {"success": False, "msg": pop_wnd.msg}
+            elif pop_wnd.title =='提示信息':
+                pop_wnd.cancelButton.type_keys('{ENTER}')
+                return {"success": False, "msg": pop_wnd.msg}
+        if  retryNo>=10:
+            return {"success": False, "msg": '重试次数超限'}
+        if not pop_wnd.flash():
+            return {"success": False, "msg": '获取弹出窗口失败'}
+        pop_wnd.okButton.type_keys('{ENTER}')
+        if pop_wnd.msg.find('成功')!=-1:
+            id=re.findall('合同编号：(.*?)。', pop_wnd.msg, re.M | re.I | re.S)[0]
+            return {"success": True, "msg": pop_wnd.msg,"id":id}
+        return {"success": False, "msg": pop_wnd.msg}
 
-    def __trade2(self,stock_no, price, amount,step=0):
-        if step==0:
-            self.main_wnd.window(control_id=0x408, class_name="Edit").set_text(str(stock_no))  # 设置股票代码
-            time.sleep(0.1)
-            self.main_wnd.window(control_id=0x409, class_name="Edit").set_text(str(price))  # 设置价格
-            self.main_wnd.window(control_id=0x40A, class_name="Edit").set_text(str(amount))  # 设置股数目
-            self.main_wnd.window(control_id=0x3EE, class_name="Button").click()  # 点击卖出or买入
-            time.sleep(0.1)
-            step=1
-        if step==1:
-            self.app.top_window().set_focus()
-            if self.app.top_window().window_text()=='网上股票交易系统5.0':
-               return {"success": False,"msg":"确认窗口未弹出","step":1}
-            popW_title=self.app.top_window().window(control_id=0x555, class_name='Static').window_text()
-            if popW_title == '提示信息':
-                msg = self.app.top_window().window(control_id=0x410, class_name='Static').window_text()  # 提示信息
-                self.app.top_window().window(control_id=0x7, class_name='Button').click()  # 提示取消
-                return {"success": False, "msg": msg, "step": -1}
-            elif popW_title=='提示':
-                msg=self.app.top_window().window(control_id=0x3EC, class_name='Static').window_text() # 提示信息
-                self.app.top_window().window(control_id=0x2, class_name='Button').click()  # 提示确定
-                return {"success": False, "msg": msg, "step": -1}
-            elif popW_title=='委托确认':
-                msg=self.app.top_window().window(control_id=0x410, class_name='Static').window_text()
-                s_code=re.findall('代码：(.*?)\n', msg, re.M | re.I | re.S)[0]
-                s_price=float(re.findall('价格：(.*?)\n', msg, re.M | re.I | re.S)[0])
-                s_amount = int(re.findall('数量：(.*?)\n', msg, re.M | re.I | re.S)[0])
-                if s_code!=stock_no and s_price!=float(price) and s_amount!=int(amount):
-                    self.app.top_window().window(control_id=0x7, class_name='Button').click()  # 委托取消
-                    return {"success": False, "msg": msg, "step":0}
-                self.app.top_window().window(control_id=0x6, class_name='Button').click()  # 委托确定
-                step=2
-            else:
-                 return {"success": False,"msg":"窗口未弹出","step":1}
-        if step==2:
-            self.app.top_window().set_focus()
-            popW_title = self.app.top_window().window(control_id=0x555, class_name='Static').window_text()
-            if popW_title!="提示":
-                return {"success": False, "msg": "委托结果窗口未弹出", "step": 2}
-            msg = self.app.top_window().window(control_id=0x3EC, class_name='Static').window_text()
-            self.app.top_window().window(control_id=0x2, class_name='Button').click()  # 提示确定
-            if msg.find('成功')!=-1:
-                return ({"success": True, "msg": msg, "step":-1})
-            return ({"success": False, "msg": msg, "step": -1})
 
     """获取grid里面的数据"""
     '''使用快捷键'''
     def __get_grid_data(self,index=3):
         grid = self.main_wnd.window(control_id=0x417, class_name='CVirtualGridCtrl')
         clipboard.EmptyClipboard()
-        grid.type_keys('^C')
+        grid.send_keystrokes('^C')
         data = clipboard.GetData()
         df = pd.read_csv(io.StringIO(data), delimiter='\t', na_filter=False)
         return df.to_dict('records')
@@ -255,7 +202,7 @@ class API:
         time.sleep(0.1)
         if "网上股票交易系统5.0" not in self.app.top_window().window_text():
             result = self.app.top_window().window(control_id=0x3EC, class_name='Static').window_text()
-            self.app.top_window().window(control_id=0x2, class_name='Button').click()  # 确定撤单
+            self.app.top_window().window(control_id=0x2, class_name='Button').type_keys('{ENTER}') # 确定撤单
             return self.__parse_result(result)
         else:
             return {
@@ -283,3 +230,59 @@ class API:
                 "msg": result
             }
 
+
+'''
+弹出窗口类
+'''
+class popupWin:
+    def __init__(self,main_wnd):
+        self.main_wnd=main_wnd
+        self.popupH=None
+        self.popup_wnd=None
+        self.title=''
+        self.msg=''
+        self.okButton=None
+        self.cancelButton=None
+
+    def reset(self):
+        self.popup_wnd=None
+        self.title=''
+        self.msg=''
+        self.okButton=None
+        self.cancelButton=None
+
+    def flash(self):
+        retryNo=0
+        while retryNo<10:
+            popupH=self.main_wnd.popup_window()
+            if popupH is not None and popupH!=self.popupH:
+                break
+            print("没有新的弹出窗口%d"%(retryNo))
+            time.sleep(0.05)
+            retryNo+=1
+            continue
+        if retryNo>=10:
+            return False
+        self.reset()
+        self.popup_wnd=self.main_wnd.window(handle=popupH)
+        titleStatic=self.popup_wnd.window(control_id=0x555, class_name='Static').wait("exists enabled visible ready",timeout=2,retry_interval=0.05)
+        self.title=titleStatic.window_text()
+        if self.title=='委托确认':
+            self.okButton=self.popup_wnd.window(control_id=0x6, class_name='Button').wait("exists enabled visible ready",timeout=2,retry_interval=0.05)
+            self.cancelButton=self.popup_wnd.window(control_id=0x7, class_name='Button').wait("exists enabled visible ready",timeout=2,retry_interval=0.05)
+            msgStatic=self.popup_wnd.window(control_id=0x410, class_name='Static').wait("exists enabled visible ready",timeout=2,retry_interval=0.05)
+            msg=msgStatic.window_text()
+            s_code=re.findall('代码：(.*?)\n', msg, re.M | re.I | re.S)[0]
+            s_price=float(re.findall('价格：(.*?)\n', msg, re.M | re.I | re.S)[0])
+            s_amount = int(re.findall('数量：(.*?)\n', msg, re.M | re.I | re.S)[0])
+            self.msg={'code':s_code,'price':s_price,'amount':s_amount}
+        elif self.title=='提示信息':
+            self.okButton=self.popup_wnd.window(control_id=0x6, class_name='Button').wait("exists enabled visible ready",timeout=2,retry_interval=0.05)
+            self.cancelButton=self.popup_wnd.window(control_id=0x7, class_name='Button').wait("exists enabled visible ready",timeout=2,retry_interval=0.05)
+            msgStatic=self.popup_wnd.window(control_id=0x410, class_name='Static').wait("exists enabled visible ready",timeout=2,retry_interval=0.05)
+            self.msg=msgStatic.window_text()
+        elif self.title=='提示':
+            self.okButton=self.popup_wnd.window(control_id=0x2, class_name='Button').wait("exists enabled visible ready",timeout=3,retry_interval=0.05)
+            msgStatic=self.popup_wnd.window(control_id=0x3EC, class_name='Static').wait("exists enabled visible ready",timeout=2,retry_interval=0.05)
+            self.msg=msgStatic.window_text()
+        return True
